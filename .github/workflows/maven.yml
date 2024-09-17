@@ -29,7 +29,7 @@ jobs:
 
       # Step 3: Build the Docker image
       - name: Build the Docker image
-        run: docker build -t booking-microservice:latest -f ./Dockerfile .
+        run: docker build -t booking-microservice:latest -f /SalonAppointmentSystem/Dockerfile .
 
       # Step 4: Run the Docker container
       - name: Run Docker container
