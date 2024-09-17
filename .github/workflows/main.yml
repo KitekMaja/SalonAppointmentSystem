@@ -19,7 +19,7 @@ jobs:
 
       # Modify this step depending on the Dockerfile location
       - name: Build the Docker image
-        run: docker build -t booking-microservice:latest -f ./Dockerfile .
+        run: docker build -t booking-microservice:latest -f /SalonAppointmentSystem/Dockerfile .
 
       - name: Run Docker container
         run: docker run -d -p 8080:8080 --name booking-microservice booking-microservice:latest
