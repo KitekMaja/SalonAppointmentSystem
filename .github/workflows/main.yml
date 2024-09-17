@@ -1,37 +1,39 @@
 name: Test job
-
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out code
         uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      # Modify this step depending on the Dockerfile location
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+      - name: Build with Maven
+        working-directory: AppointmentBookingService
+        run: mvn clean package -DskipTests
       - name: Build the Docker image
         run: docker build -t booking-microservice:latest -f AppointmentBookingService/Dockerfile AppointmentBookingService
-
       - name: Run Docker container
         run: docker run -d -p 8080:8080 --name booking-microservice booking-microservice:latest
-
       - name: Wait for service to start
         run: |
           echo "Waiting for service to start..."
           sleep 15
-
       - name: Run tests
         working-directory: AppointmentBookingService
         run: mvn test
-
       - name: Clean up Docker container
         run: docker stop booking-microservice && docker rm booking-microservice
