@@ -2,9 +2,9 @@ name: Test job
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
 
 jobs:
   build-and-test:
@@ -18,7 +18,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: testdb
-        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - name: Check out code
@@ -59,7 +59,12 @@ jobs:
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: root
           SPRING_JPA_HIBERNATE_DDL_AUTO: update
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
         run: mvn test
+
+      - name: Print MySQL Logs
+        if: failure()
+        run: docker logs ${{ job.services.mysql.id }}
 
       - name: Clean up Docker container
         run: docker stop booking-microservice && docker rm booking-microservice
