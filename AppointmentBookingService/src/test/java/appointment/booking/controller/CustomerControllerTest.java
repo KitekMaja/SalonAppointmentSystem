@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -27,8 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@Disabled
+@WebMvcTest(CustomerController.class)
 class CustomerControllerTest {
 
     private final Faker faker = new Faker();
@@ -36,16 +36,13 @@ class CustomerControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private CustomerService customerService;
+    @Autowired
     private MockMvc mockMvc;
-    @InjectMocks
-    private CustomerController customerController;
     private CustomerDTO customerDTO;
     private AddressDTO addressDTO;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
         customerDTO = new CustomerDTO();
         customerDTO.setIdCustomer(faker.number().randomNumber());
         customerDTO.setName(faker.name().firstName());

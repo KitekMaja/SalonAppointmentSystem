@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -28,23 +29,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@Disabled
+@WebMvcTest(AppointmentController.class)
 class AppointmentControllerTest {
     private final Faker faker = new Faker();
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
     private AppointmentService appointmentService;
+    @Autowired
     private MockMvc mockMvc;
-    @InjectMocks
-    private AppointmentController appointmentController;
     private AppointmentDTO appointmentDTO;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(appointmentController).build();
         appointmentDTO = new AppointmentDTO();
         appointmentDTO.setIdAppointment(faker.number().randomNumber());
         appointmentDTO.setStartTime(LocalDateTime.now());

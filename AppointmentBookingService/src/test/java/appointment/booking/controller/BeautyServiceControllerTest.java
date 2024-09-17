@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -27,23 +28,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@Disabled
+@WebMvcTest(BeautyServiceController.class)
 class BeautyServiceControllerTest {
     private final Faker faker = new Faker();
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
     private BeautyServiceService beautyServiceService;
+    @Autowired
     private MockMvc mockMvc;
-    @InjectMocks
-    private BeautyServiceController beautyServiceController;
     private BeautyServiceDTO beautyServiceDTO;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(beautyServiceController).build();
         beautyServiceDTO = new BeautyServiceDTO();
         beautyServiceDTO.setIdService(faker.number().randomNumber());
         beautyServiceDTO.setServiceName(faker.commerce().productName());
