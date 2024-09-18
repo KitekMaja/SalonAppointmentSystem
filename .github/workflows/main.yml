@@ -1,39 +1,70 @@
 name: Test job
+
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+
       - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven
+
       - name: Build with Maven
         working-directory: AppointmentBookingService
         run: mvn clean package -DskipTests
+
       - name: Build the Docker image
         run: docker build -t booking-microservice:latest -f AppointmentBookingService/Dockerfile AppointmentBookingService
+
       - name: Run Docker container
         run: docker run -d -p 8080:8080 --name booking-microservice booking-microservice:latest
-      - name: Wait for service to start
+
+      - name: Wait for services to start
         run: |
-          echo "Waiting for service to start..."
-          sleep 15
+          echo "Waiting for services to start..."
+          sleep 30
+
       - name: Run tests
         working-directory: AppointmentBookingService
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/testdb
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
+          SPRING_JPA_HIBERNATE_DDL_AUTO: update
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
         run: mvn test
+
+      - name: Print MySQL Logs
+        if: failure()
+        run: docker logs ${{ job.services.mysql.id }}
+
       - name: Clean up Docker container
         run: docker stop booking-microservice && docker rm booking-microservice
