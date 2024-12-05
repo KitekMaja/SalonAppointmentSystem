@@ -4,6 +4,7 @@ import appointment.booking.dto.AddressDTO;
 import appointment.booking.service.AddressService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.datafaker.Faker;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ class AddressControllerTest {
     private AddressDTO addressDTO;
 
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
         addressDTO = new AddressDTO();
         addressDTO.setIdAddress(faker.number().randomNumber());
         addressDTO.setStreet(faker.address().streetAddress());
@@ -43,6 +44,12 @@ class AddressControllerTest {
         addressDTO.setPostCode(faker.address().zipCode());
         addressDTO.setCountry(faker.address().country());
         addressDTO.setIdCustomer(faker.number().randomNumber());
+    }
+
+    @AfterEach
+    void afteEach()
+    {
+
     }
 
     @Test

@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class BeautyServiceRepositoryTest {
@@ -30,23 +31,19 @@ class BeautyServiceRepositoryTest {
 
     @Test
     void testSaveBeautyService() {
-        BeautyService newService = new BeautyService();
-        newService.setServiceName(faker.commerce().productName());
-        newService.setDuration(Duration.ofMinutes(faker.number().numberBetween(30, 120)));
-        newService.setPrice(faker.number().randomDouble(2, 20, 100));
-
-        BeautyService savedService = beautyServiceRepository.save(newService);
-
-        assertThat(savedService).isNotNull();
-        assertThat(savedService.getIdService()).isNotNull();
-        assertThat(savedService.getServiceName()).isEqualTo(newService.getServiceName());
+        BeautyService newService = createBeautyService();
+        assertThat(newService).isNotNull();
+        assertThat(newService.getIdService()).isNotNull();
+        assertThat(newService.getServiceName()).isEqualTo(newService.getServiceName());
     }
 
     @Test
-    void testFindBeautyServiceById() {
+    void saveAndFindBeautyServiceById() {
+        BeautyService saved = createBeautyService();
         Optional<BeautyService> foundService = beautyServiceRepository.findById(beautyService.getIdService());
-        assertThat(foundService).isPresent();
-        assertThat(foundService.get().getServiceName()).isEqualTo(beautyService.getServiceName());
+        assertEquals(saved.getServiceName(), foundService.get().getServiceName());
+        assertEquals(saved.getPrice(), foundService.get().getPrice());
+
     }
 
     @Test
@@ -61,5 +58,14 @@ class BeautyServiceRepositoryTest {
         beautyServiceRepository.delete(beautyService);
         Optional<BeautyService> deletedService = beautyServiceRepository.findById(beautyService.getIdService());
         assertThat(deletedService).isNotPresent();
+    }
+
+    private BeautyService createBeautyService()
+    {
+        BeautyService newService = new BeautyService();
+        newService.setServiceName(faker.commerce().productName());
+        newService.setDuration(Duration.ofMinutes(faker.number().numberBetween(30, 120)));
+        newService.setPrice(faker.number().randomDouble(2, 20, 100));
+        return beautyServiceRepository.save(newService);
     }
 }
