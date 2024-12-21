@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.Set;
 
 import static jakarta.persistence.CascadeType.ALL;
@@ -26,5 +27,13 @@ public class BeautyService {
     private double price;
 
     @OneToMany(cascade = ALL, mappedBy = "service")
-    private Set<Appointment> appointments;
+    private Set<Appointment> appointments = new HashSet<>();
+
+    public void setToAppointment(Appointment appointment) {
+        if (appointments == null || !(appointments instanceof HashSet)) {
+            appointments = new HashSet<>(appointments); // Create a mutable copy
+        }
+        appointments.add(appointment);
+        appointment.setService(this);
+    }
 }

@@ -68,15 +68,12 @@ class CustomerRepositoryTest {
         String name = faker.name().firstName();
         String surname = faker.name().lastName();
         String email = sb.append(name).append(".").append(surname).append("@gmail.com").toString();
-        String phoneNumber = faker.phoneNumber().toString();
-        Set<Address> addresses = Set.of();
-        Set<Appointment> appointments = Set.of();
         customer.setName(name);
         customer.setSurname(surname);
         customer.setEmail(email);
-        customer.setPhoneNumber(phoneNumber);
-        customer.setAddresses(addresses);
-        customer.setAppointments(appointments);
+        customer.setPhoneNumber(faker.phoneNumber().toString());
+        customer.setAddresses(Set.of());
+        customer.setAppointments(Set.of());
         return customerRepository.save(customer);
     }
 }

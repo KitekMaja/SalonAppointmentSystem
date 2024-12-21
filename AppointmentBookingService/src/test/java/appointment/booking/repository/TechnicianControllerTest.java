@@ -17,7 +17,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-public class TechnicianControllerTest {
+class TechnicianControllerTest {
     private final Faker faker = new Faker();
 
     @Autowired
